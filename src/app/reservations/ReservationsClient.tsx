@@ -10,6 +10,7 @@ import { SafeReservation, SafeUser } from "@/app/types"
 import Heading from "@/app/components/Heading";
 import Container from "@/app/components/Container";
 import ListingCard from "@/app/components/listings/ListingCard";
+import React, { useEffect } from "react";
 
 interface ReservationsClientProps {
   reservations: SafeReservation[],
@@ -22,6 +23,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
 }) => {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState('');
+  const [filteredReservations, setFilteredReservations] = useState<SafeReservation[]>([]);
 
   const onCancel = useCallback((id: string) => {
     setDeletingId(id);
@@ -38,6 +40,15 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
       setDeletingId('');
     })
   }, [router]);
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const filtered = reservations.filter((reservation) => {
+      const endDate = new Date(reservation.endDate);
+      return endDate >= currentDate; // Garder les réservations dont la date de fin est postérieure ou égale à aujourd'hui
+    });
+    setFilteredReservations(filtered);
+  }, [reservations]);
 
   return (
     <Container>
@@ -58,7 +69,7 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
           gap-8
         "
       >
-        {reservations.map((reservation: any) => (
+        {filteredReservations.map((reservation) => (
           <ListingCard
             key={reservation.id}
             data={reservation.listing}
@@ -74,5 +85,6 @@ const ReservationsClient: React.FC<ReservationsClientProps> = ({
     </Container>
    );
 }
+
  
 export default ReservationsClient;

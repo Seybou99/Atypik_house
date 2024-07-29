@@ -23,13 +23,19 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   favoriteIds String[] @db.ObjectId
+  role Role @default(USER)  // Ajout du champ role
 
   accounts Account[]
   listings Listing[]
   reservations Reservation[] // Ajout de la relation vers les réservations
+  Message Message[]
 }
 
-
+enum Role {
+  USER
+  MANAGER
+  ADMIN
+}
 
 model Account {
   id String @id @default(auto()) @map("_id") @db.ObjectId
@@ -75,4 +81,12 @@ model Reservation {
   createdAt DateTime @default(now())
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  content   String
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

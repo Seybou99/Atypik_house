@@ -10,6 +10,19 @@ const nextConfig = {
             "res.cloudinary.com",
         ],
     },
+    webpack: (config, { isServer }) => {
+        if (!isServer) {
+            config.resolve.fallback = {
+                fs: false,
+                path: false,
+                os: false,
+                crypto: false,
+                ...config.resolve.fallback,
+            };
+        }
+
+        return config;
+    },
 }
 
 export default nextConfig;

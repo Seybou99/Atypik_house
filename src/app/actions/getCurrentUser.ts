@@ -2,12 +2,13 @@ import { getServerSession } from "next-auth/next";
 import { AuthOptions } from "next-auth";
 import prisma from "@/app/libs/prismadb";
 import { authOptions } from "../../../pages/api/auth/[...nextauth]";
+import { SafeUser } from "../types";
 
 export async function getSession() {
   return await getServerSession(authOptions);
 }
 
-export default async function getCurrentUser() {
+export default async function getCurrentUser(): Promise<SafeUser | null> {
   try {
     const session = await getSession();
 
@@ -30,7 +31,7 @@ export default async function getCurrentUser() {
       createdAt: currentUser.createdAt.toISOString(),
       updatedAt: currentUser.updatedAt.toISOString(),
       emailVerified: currentUser.emailVerified ? currentUser.emailVerified.toISOString() : null,
-    };
+    } as SafeUser;
   } catch (error: any) {
     return null;
   }
